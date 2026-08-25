@@ -1,0 +1,40 @@
+# schemas/insurance.yaml
+doc_type: insurance
+description: >
+  An insurance policy document detailing coverage, premium, and beneficiary.
+department: Insurance
+completeness_threshold: 90
+ocr_confidence_threshold: 60
+fields:
+  policy_number:
+    type: string
+    description: Unique policy identifier
+    required: true
+  policy_holder:
+    type: string
+    description: Name of the person holding the policy
+    required: true
+  policy_type:
+    type: string
+    description: Type of insurance (e.g. Life, Health, Auto)
+    required: true
+  issue_date:
+    type: date
+    description: Date the policy was issued, format YYYY-MM-DD
+    required: true
+  expiry_date:
+    type: date
+    description: Date the policy expires, format YYYY-MM-DD
+    required: true
+  premium:
+    type: string
+    description: Premium amount, as a decimal string (e.g. "1520.49")
+    required: true
+  coverage_amount:
+    type: string
+    description: Total coverage amount, as a decimal string (e.g. "13523.51")
+    required: true
+  beneficiary:
+    type: string
+    description: Name of the designated beneficiary
+    required: false

@@ -1,0 +1,128 @@
+[
+  {
+    "filename": "INV-2026-0001.pdf",
+    "vendor_name": "Atlas Engineering Ltd.",
+    "invoice_number": "INV-2026-0001",
+    "invoice_date": "2026-01-27",
+    "total_amount": "3362.82",
+    "tax_amount": "0.00",
+    "currency": "QAR"
+  },
+  {
+    "filename": "INV-2026-0009.pdf",
+    "vendor_name": "Golden Harvest Store",
+    "invoice_number": "INV-2026-0009",
+    "invoice_date": "2026-04-15",
+    "total_amount": "17484.16",
+    "tax_amount": "832.58",
+    "currency": "BDT"
+  },
+  {
+    "filename": "INV-2026-0022_page_1.png",
+    "vendor_name": "Nova Medical Supplies",
+    "invoice_number": "INV-2026-0022",
+    "invoice_date": "2026-04-08",
+    "total_amount": "23566.44",
+    "tax_amount": "0.00",
+    "currency": "BDT"
+  },
+  {
+    "filename": "INV-2026-0023.pdf",
+    "vendor_name": "Eastern Care Pharmacy",
+    "invoice_number": "INV-2026-0023",
+    "invoice_date": "2026-02-12",
+    "total_amount": "10312.71",
+    "tax_amount": "719.49",
+    "currency": "USD"
+  },
+  {
+    "filename": "INV-2026-0028.pdf",
+    "vendor_name": "BlueRiver Trading Co.",
+    "invoice_number": "INV-2026-0028",
+    "invoice_date": "2026-01-16",
+    "total_amount": "20432.95",
+    "tax_amount": "0.00",
+    "currency": "SAR"
+  },
+  {
+    "filename": "X00016469676.jpg",
+    "vendor_name": "tan chay yee",
+    "invoice_number": "22497",
+    "invoice_date": "23-01-2019",
+    "total_amount": "20.00",
+    "tax_amount": "0.00",
+    "currency": "RM"
+  },
+  {
+    "filename": "X51005268408.jpg",
+    "vendor_name": "TAMAN BERKELEY",
+    "invoice_number": "18222/102/T0341",
+    "invoice_date": "20-11-17",
+    "total_amount": "169.80",
+    "tax_amount": "9.61",
+    "currency": "RM"
+  },
+  {
+    "filename": "X51005605295.jpg",
+    "vendor_name": "ECONSAVE CASH & CARRY (FC) S/B",
+    "invoice_number": "220318/10049/04/24382",
+    "invoice_date": "22/03/18",
+    "total_amount": "5.15",
+    "tax_amount": "0.29",
+    "currency": "RM"
+  },
+  {
+    "filename": "X51005675095.jpg",
+    "vendor_name": "SUN VICTORY SDN BHD",
+    "invoice_number": "0207140118000488",
+    "invoice_date": "14/01/2018",
+    "total_amount": "4.00",
+    "tax_amount": "0.23",
+    "currency": "RM"
+  },
+  {
+    "filename": "X51005724623.jpg",
+    "vendor_name": "KEDAI PAPAN YEW CH JAN",
+    "invoice_number": "CS00010612",
+    "invoice_date": "08/03/2018",
+    "total_amount": "312.70",
+    "tax_amount": "17.70",
+    "currency": "RM"
+  },
+  {
+    "filename": "X51005806720.jpg",
+    "vendor_name": "SATU KAMPUNG ENTERPRISE SDN BHD",
+    "invoice_number": "CS00039038",
+    "invoice_date": "13/01/2018",
+    "total_amount": "20.00",
+    "tax_amount": "1.13",
+    "currency": "RM"
+  },
+  {
+    "filename": "X51006555072.jpg",
+    "vendor_name": "DIGI TELECOMMUNICATIONS SDN BHD",
+    "invoice_number": "N/A",
+    "invoice_date": "13/10/2017",
+    "total_amount": "234.40",
+    "tax_amount": "0.00",
+    "currency": "RM"
+  },
+  {
+    "filename": "X51006555806.jpg",
+    "vendor_name": "GARDENIA BAKERIES (KL) SDN BHD",
+    "invoice_number": "7730F710",
+    "invoice_date": "30/07/2017",
+    "total_amount": "20.21",
+    "tax_amount": "-1.07",
+    "currency": "RM"
+  },
+  {
+    "filename": "X51008164996.jpg",
+    "vendor_name": "ONE ONE THREE SEAFOOD RESTAURANT SDN BHD",
+    "invoice_number": "V001-540581",
+    "invoice_date": "17-06-2018",
+    "total_amount": "58.00",
+    "tax_amount": "0.00",
+    "currency": "RM"
+  }
+]

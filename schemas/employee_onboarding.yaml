@@ -1,0 +1,60 @@
+# schemas/employee_onboarding.yaml
+doc_type: employee_onboarding
+description: >
+  An employee information/onboarding form with personal and job details.
+department: HR
+completeness_threshold: 90
+ocr_confidence_threshold: 60
+fields:
+  employee_id:
+    type: string
+    description: Unique employee identifier
+    required: true
+  full_name:
+    type: string
+    description: Full name of the employee
+    required: true
+  date_of_birth:
+    type: date
+    description: Employee's date of birth
+    required: true
+  gender:
+    type: string
+    description: Employee's gender
+    required: false
+  phone:
+    type: string
+    description: Contact phone number
+    required: false
+  email:
+    type: string
+    description: Contact email address
+    required: false
+  address:
+    type: string
+    description: Residential address
+    required: false
+  department:
+    type: string
+    description: Department the employee belongs to
+    required: true
+  job_title:
+    type: string
+    description: Employee's job title
+    required: true
+  manager:
+    type: string
+    description: Name of the employee's manager
+    required: false
+  joining_date:
+    type: date
+    description: Date the employee joined, or start date
+    required: true
+  employment_type:
+    type: string
+    description: Employment type (e.g. Full-Time, Part-Time, Contract)
+    required: true
+  work_location:
+    type: string
+    description: Office or work location
+    required: false

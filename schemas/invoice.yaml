@@ -1,0 +1,32 @@
+doc_type: invoice
+description: >
+  A vendor invoice/receipt requesting payment for goods or services.
+department: Finance
+completeness_threshold: 90
+ocr_confidence_threshold: 60
+fields:
+  vendor_name:
+    type: string
+    description: Name of the company/person issuing the invoice
+    required: true
+  invoice_number:
+    type: string
+    description: Unique invoice identifier
+    required: true
+  invoice_date:
+    type: date
+    description: Date the invoice was issued, format DD-MM-YYYY
+    required: true
+  total_amount:
+    type: string
+    description: Final amount due, as a decimal string (e.g. "58.00")
+    required: true
+  tax_amount:
+    type: string
+    description: Tax amount, as a decimal string (e.g. "0.00")
+    synonyms: [GST, VAT, Service Tax, Sales Tax, TAX, HST]
+    required: true
+  currency:
+    type: string
+    description: Currency code/symbol (e.g. RM, USD, INR)
+    required: true
