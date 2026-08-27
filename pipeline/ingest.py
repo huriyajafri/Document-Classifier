@@ -1,10 +1,13 @@
 import fitz
-import pytesseract
-from pytesseract import Output
+from paddleocr import PaddleOCR
 from PIL import Image
 from pathlib import Path
 import io
+import numpy as np
 
+# init once, reused across all calls
+#_paddle_ocr = PaddleOCR(use_textline_orientation=True, lang='en')
+_paddle_ocr = PaddleOCR(use_textline_orientation=True, lang='en', enable_mkldnn=False)
 
 def has_text_layer(pdf_path: str, min_chars: int = 20) -> bool:
     doc = fitz.open(pdf_path)
@@ -24,18 +27,20 @@ def extract_text_native(pdf_path: str) -> str:
 
 
 def _ocr_image_with_confidence(img: Image.Image) -> tuple[str, float]:
-    """Runs Tesseract once, returns (text, avg_word_confidence 0-100).
-    Only counts confidence for boxes that actually recognized non-empty text --
-    image_to_data can report a valid conf score for blank/whitespace boxes too,
-    which would otherwise inflate the average even when nothing was read."""
-    data = pytesseract.image_to_data(img, output_type=Output.DICT)
-    confs = [
-        int(c) for c, t in zip(data["conf"], data["text"])
-        if int(c) != -1 and t.strip()
-    ]
-    avg_conf = sum(confs) / len(confs) if confs else 0.0
-    text = pytesseract.image_to_string(img)
-    return text, avg_conf
+    """Runs PaddleOCR once, returns (text, avg_confidence 0-100).
+    Mirrors the old Tesseract function's contract exactly."""
+    img_array = np.array(img.convert("RGB"))
+    result = _paddle_ocr.predict(img_array)
+
+    lines, confs = [], []
+    if result:
+        res = result[0]
+        lines = res.get("rec_texts", [])
+        confs = res.get("rec_scores", [])
+
+    full_text = "\n".join(lines)
+    avg_conf = (sum(confs) / len(confs) * 100) if confs else 0.0
+    return full_text, avg_conf
 
 
 def extract_text_ocr(pdf_path: str, dpi: int = 300) -> tuple[str, float]:
@@ -66,7 +71,7 @@ def extract_text(file_path: str) -> dict:
     ext = Path(file_path).suffix.lower()
 
     if ext in IMAGE_EXTS:
-        print(f"[INGEST] {file_path}: image file — using OCR (Tesseract)")
+        print(f"[INGEST] {file_path}: image file — using OCR (PaddleOCR)")
         text, conf = extract_text_from_image(file_path)
         return {"text": text, "source": "ocr", "ocr_confidence": conf}
 
@@ -74,6 +79,6 @@ def extract_text(file_path: str) -> dict:
         print(f"[INGEST] {file_path}: text layer found — used direct PDF extraction (PyMuPDF)")
         return {"text": extract_text_native(file_path), "source": "native", "ocr_confidence": None}
 
-    print(f"[INGEST] {file_path}: no usable text layer — falling back to OCR (Tesseract)")
+    print(f"[INGEST] {file_path}: no usable text layer — falling back to OCR (PaddleOCR)")
     text, conf = extract_text_ocr(file_path)
     return {"text": text, "source": "ocr", "ocr_confidence": conf}
