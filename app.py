@@ -65,8 +65,15 @@ if uploaded_file is not None:
     st.write(f"**Document type:** {doc_type or 'Unclassified'}")
 
     st.subheader("Extracted Fields")
-    st.json(result.get("fields"))
+    fields_only = {k: v for k, v in (result.get("fields") or {}).items() if not k.startswith("_")}
+    st.json(fields_only)
 
+    completeness = result.get("_completeness", 0)
+    st.write(f"**Completeness:** {completeness}%")
+
+    ocr_conf = result.get("ocr_confidence")
+    if ocr_conf is not None:
+        st.write(f"**OCR Confidence:** {ocr_conf}%")
     st.subheader("Routing Decision")
     if result["routing_status"] == "routed":
         st.success(f"Routed to **{result['routed_to']}**\n\nAppended to: `{result['routed_file']}`")
