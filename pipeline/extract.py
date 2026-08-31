@@ -17,7 +17,7 @@ def build_prompt(text: str, schema: dict) -> str:
 
     
     return f"""Extract the following fields from the document text as strict JSON.
-        
+
        IMPORTANT TAX RULE:
             - If the document contains an explicit tax/GST/VAT/service-tax line, extract its numeric value EXACTLY.
             - An explicit tax value of 0, 0.00, 0.0, etc. MUST be returned as the number 0, NOT null.
@@ -30,6 +30,14 @@ def build_prompt(text: str, schema: dict) -> str:
             - NEVER convert an explicitly stated zero tax amount into null.
             - Do NOT assume tax is zero merely because a tax line is absent.
 
+       IMPORTANT ID FIELD RULE:
+            - For ID-like fields (e.g. invoice_number, policy_number, employee_id): extract ONLY the identifier value itself.
+            - Strip any surrounding labels, prefixes, or words such as "Invoice", "Tax Invoice", "Invoice No.", "Policy", "#", ":".
+            - Examples:
+            - "TAX Invoice: #11372" -> invoice_number: "11372"
+            - "Invoice No. INV-2024-045" -> invoice_number: "INV-2024-045"
+            - "Policy: POL/998877" -> policy_number: "POL/998877"
+            - Keep alphanumeric identifiers intact (don't strip characters that are part of the actual ID), only remove label words and punctuation that are clearly not part of the ID.
 
        Some fields may appear under different labels on the document  normalize these into the field name given below regardless of which label the document uses.
        
@@ -54,7 +62,7 @@ def extract_fields(text: str, doc_type: str, model: str = MODEL) -> dict:
     schema = get_schema(doc_type)
     prompt = build_prompt(text, schema)
 
-    print(f"\n--- OCR/SOURCE TEXT (doc_type={doc_type}) ---\n{text}\n--- END SOURCE TEXT ---\n")
+    #print(f"\n--- OCR/SOURCE TEXT (doc_type={doc_type}) ---\n{text}\n--- END SOURCE TEXT ---\n")
 
     resp = requests.post(OLLAMA_URL, json={
         "model": model,
@@ -66,7 +74,7 @@ def extract_fields(text: str, doc_type: str, model: str = MODEL) -> dict:
     raw = resp.json()["response"].strip()
     raw = raw.replace("```json", "").replace("```", "").strip()
 
-    print(f"--- LLM RAW OUTPUT ---\n{raw}\n--- END LLM OUTPUT ---\n")
+    #print(f"--- LLM RAW OUTPUT ---\n{raw}\n--- END LLM OUTPUT ---\n")
 
     try:
         parsed = json.loads(raw)

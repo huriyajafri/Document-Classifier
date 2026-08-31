@@ -6,9 +6,7 @@ import io
 import numpy as np
 
 # init once, reused across all calls
-#_paddle_ocr = PaddleOCR(use_textline_orientation=True, lang='en')
-_paddle_ocr = PaddleOCR(use_textline_orientation=True, lang='en', enable_mkldnn=False)
-
+_paddle_ocr = PaddleOCR(use_textline_orientation=True, lang='en')
 def has_text_layer(pdf_path: str, min_chars: int = 20) -> bool:
     doc = fitz.open(pdf_path)
     for page in doc[:2]:
