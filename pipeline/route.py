@@ -21,7 +21,7 @@ def get_completeness_threshold(doc_type: str) -> float:
 
 def get_ocr_threshold(doc_type: str) -> float:
     schema = get_schema(doc_type)
-    return schema.get("ocr_confidence_threshold", 60)
+    return schema.get("ocr_confidence_threshold", 80)
 
 
 def append_to_department_file(department: str, record: dict) -> Path:

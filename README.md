@@ -2,6 +2,8 @@
 
 Schema-driven pipeline: works on invoices, insurance, and onboarding docs now, scales to future document types by adding a schema file — no code changes.
 
+> **Branch note:** `try-paddleocr` is the recommended branch to use right now. It swaps Tesseract for PaddleOCR in `ingest.py`, keeping the same return contract, with generally better OCR accuracy on scanned samples. `main` still uses Tesseract. See "OCR engines" below before choosing.
+
 ## Setup
 
 ```bash
@@ -10,10 +12,13 @@ source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-**Tesseract** (for OCR on scanned PDFs) must be installed separately:
-- Windows: install from https://github.com/UB-Mannheim/tesseract/wiki
-- Mac: `brew install tesseract`
-- Ubuntu: `sudo apt install tesseract-ocr`
+**OCR engine** — depends on branch:
+- `main` (Tesseract): install separately —
+  - Windows: install from https://github.com/UB-Mannheim/tesseract/wiki
+  - Mac: `brew install tesseract`
+  - Ubuntu: `sudo apt install tesseract-ocr`
+- `try-paddleocr` (PaddleOCR): installed via `requirements.txt` (`paddlepaddle==3.2.2`, `paddleocr==3.7.0`). No separate system install needed.
+  - **Known issue (Windows CPU):** `paddlepaddle==3.3.1` crashes with `ConvertPirAttribute2RuntimeAttribute` when oneDNN is enabled. Workaround is `enable_mkldnn=False`, but that adds latency. Pin `paddlepaddle==3.2.2` instead — oneDNN loads without crashing on this version.
 
 **Ollama** (local LLM) must be running:
 ```bash
@@ -78,17 +83,30 @@ Orchestrated via `main.py`, batch-run via `run_batch.py`, evaluated via `eval.py
 
 | Stage | File | Purpose |
 |---|---|---|
-| Ingest | `ingest.py` | Text extraction (PyMuPDF for native PDFs, Tesseract OCR for scans/images) |
+| Ingest | `ingest.py` | Text extraction (PyMuPDF for native PDFs, OCR for scans/images — Tesseract on `main`, PaddleOCR on `try-paddleocr`) |
 | Classify | `classify.py` | LLM-based doc_type matching against registered schemas |
 | Extract | `extract.py` | LLM-based structured field extraction per schema |
 | Route | `route.py` | Sends records to department output or human review queue |
+
+## OCR engines
+
+| | `main` | `try-paddleocr` |
+|---|---|---|
+| Engine | Tesseract (`pytesseract`) | PaddleOCR 3.7.0 |
+| Confidence source | `image_to_data`, filtered to non-empty word boxes | `rec_scores` from `.predict()` |
+| API | stable | newer `.predict()` API, `rec_texts` / `rec_scores`, `use_textline_orientation=True` |
+| Return contract to rest of pipeline | same | same — drop-in, no downstream changes needed |
+| Windows CPU caveat | none known | pin `paddlepaddle==3.2.2` (see Setup) |
+| Status | stable, in production use | experimental, accuracy vs. Tesseract not yet fully validated on invoice samples |
+
+Use `try-paddleocr` for better OCR accuracy; merge to `main` once the paddlepaddle pin is confirmed stable and accuracy is validated.
 
 ## Design principles
 
 - **Schema-driven, not code-driven.** Adding a new document category (e.g. insurance, onboarding forms) requires only a new YAML schema in `schemas/` — no code changes. Department routing, confidence thresholds, field synonyms, and required-field status are all config-defined.
 - **No self-reported LLM confidence.** The model's own confidence score was tried and dropped — unreliable on the 3B model (`None` returns) and inherently untrustworthy as self-assessment. Routing instead uses two objective signals:
   - **Field completeness** — computed locally from which required fields were extracted.
-  - **OCR confidence** — from Tesseract's `image_to_data` (OCR path only), filtered to only count word-boxes with non-empty recognized text.
+  - **OCR confidence** — from the OCR engine's per-word/box confidence scores (OCR path only), filtered to only count non-empty recognized text.
 - **LLM never sees the image.** It only receives OCR'd text, so its output reflects text clarity, not image quality.
 - **Routing by source type:**
   - Native PDFs → route on completeness alone.
@@ -100,14 +118,16 @@ Orchestrated via `main.py`, batch-run via `run_batch.py`, evaluated via `eval.py
 | Signal | Threshold | Applies to |
 |---|---|---|
 | Completeness | ≥ 90 | All doc types |
-| OCR confidence | ≥ 60 | OCR'd files only (scans/images) |
+| OCR confidence | ≥ 80 | OCR'd files only (scans/images) |
+
+> Thresholds are current starting estimates, not yet validated against batch results.
 
 - **Flat record schema.** `route.py` reads fields via flat `record.get()` calls, so `ocr_confidence` and `_completeness` live at the top level of the result dict, not nested under `fields`.
 
 ## Stack
 
 - Python, developed in VS Code on Windows
-- **OCR:** Tesseract via `pytesseract`
+- **OCR:** PaddleOCR 3.7.0 (`try-paddleocr`, recommended) / Tesseract via `pytesseract` (`main`)
 - **PDF parsing:** PyMuPDF
 - **LLM:** `qwen2.5:3b-instruct` via Ollama (local, 4GB VRAM)
 - **Schemas:** YAML (`schemas/invoice.yaml`, future categories to follow)
